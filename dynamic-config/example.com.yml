@@ -1,0 +1,15 @@
+http:
+  routers:
+    wordpress-router:
+      rule: "Host(`www.example.com`) || Host(`example.com`)"
+      entryPoints:
+        - websecure # defined in the static config, corresponds to port 443 (https)
+      tls:
+        certResolver: letsencrypt # defined in the static config
+      service: wordpress-service # defined below
+
+  services:
+    wordpress-service:
+      loadBalancer:
+        servers:
+          - url: "http://wordpress:8001" # this will redirect the traffic to the wordpress container, port 8001

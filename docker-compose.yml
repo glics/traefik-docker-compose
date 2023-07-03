@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik:v2.10 # Pin your versions but update regularly!
+    container_name: traefik
+    restart: always
+    ports:
+      # Port 80 is only used for redirecting to https; Some TLDs don't even support connecting to it (i.e. .dev).
+      # Let's Encrypt will use a challenge on port 443 to verify the domain (TLS-ALPN-01);
+      # See https://doc.traefik.io/traefik/https/acme/#tlschallenge for more information.
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./dynamic-config:/etc/traefik/dynamic-config:ro
+      - ./static-config.yml:/etc/traefik/traefik.yml:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - default
+      - traefik-net # This should be added to all services that need to be proxied by traefik
+
+networks:
+  traefik-net:
+    external: true # This should be added to all services that need to be proxied by traefik
