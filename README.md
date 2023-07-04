@@ -1,23 +1,52 @@
-# Reverse Proxy Docker Compose services with Traefik
+# Reverse Proxy Docker Compose stacks with Traefik
 
-This repo contains the configuration files for Traefik, used in production as reverse proxy to host multiple Wordpress sites on the same server.
+This repository includes configuration files for Traefik, which is utilized as a reverse proxy to enable hosting of multiple sites on a single server through the use of multiple Docker Compose stacks.
 
-The advantages of this approach are:
+## Advantages
 
-- It's easy to manage multiple sites and add new ones
-- SSL certificates are automatically generated and renewed by Traefik using Let's Encrypt
-- In case it's needed, it's easy to move a site to another server
-  - just copy the site folder, install docker, start the Compose stack and update the DNS records
+The reasons for which you may want this Docker Compose/Traefik setup are:
 
-All that's required is installing Docker and Docker Compose (both can be easily installed using the [convenience install script](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script)) and to create a docker network in bridge mode, named `traefik-net`:
+- **Easy management of multiple sites:** With Traefik, it's easy to manage multiple sites and add new ones. You can simply create a new folder for each site, add the necessary configuration files, and Traefik will automatically route traffic to the correct site based on the domain name.
+- **Automatic SSL certificate generation and renewal:** Traefik can automatically generate and renew SSL certificates using Let's Encrypt, which means you don't have to worry about manually configuring SSL certificates for each site.
+- **Easy site migration:** If you need to move a site to another server, it's easy to do so with Traefik. You can simply copy the site folder, install Docker, start the Compose stacks for Traefik and your site, and update the DNS records to point to the new server.
+
+## Requirements
+
+To use this stack, you need to have Docker and Docker Compose installed on your system. If you don't have them already and you're running a Debian-based distro on your server, you can easily install them using the [convenience install script](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script).
+
+You also need to create a Docker network in bridge mode called `traefik-net`. You can do this by running the following command:
 
 ```bash
 docker network create -d bridge traefik-net
 ```
 
-After that, you can start the Compose stack using `docker-compose up -d` in the directory containing the `docker-compose.yml` file.
+## Usage
 
-Other services are supposed to provide their own docker compose stack, they should not publish any port, just connect to the `traefik-net` network and add a .yml file for them in the `dynamic-config` folder.
+To start the Traefik stack, run the following command in the directory containing the `docker-compose.yml` file:
+
+```bash
+docker-compose up -d
+```
+
+This will start the Traefik reverse proxy and make it available on port 80 (http) and 443 (https).
+
+Other services that you want to expose through Traefik should provide their own Docker Compose stack. They should not publish any ports, but instead connect to the `traefik-net` network and add a `.yml` file for their service in the `dynamic-config` folder.
+
+To connect a service to the `traefik-net` network, add the following to the service's `docker-compose.yml` file:
+
+```yaml
+services:
+  your-service:
+    networks:
+      - traefik-net
+networks:
+  traefik-net:
+    external: true
+```
+
+## Contributing
+
+If you find any issues with this stack or want to contribute improvements, feel free to open an issue or submit a pull request. We welcome contributions from the community!
 
 Explaination for the provided configuration files can be found as comments in the files themselves.
 
