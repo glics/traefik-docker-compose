@@ -1,12 +1,8 @@
 entryPoints:
   web:
     address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
+    # redirection can be setup globally here,
+    # but it's more flexible to do it per-router in the dynamic config
   websecure: # this name will be used in dynamic config files, in the entryPoints sections of the routers
     address: ":443"
 
@@ -21,6 +17,7 @@ providers:
   file:
     directory: /etc/traefik/dynamic-config
     watch: true
+
 # Uncomment the following section to enable logs as needed
 #log:
 #  level: INFO

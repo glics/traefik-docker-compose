@@ -38,6 +38,7 @@ To connect a service to the `traefik-net` network, add the following to the serv
 services:
   your-service:
     networks:
+      - default # needed to communicate with other services in the same Docker Compose stack
       - traefik-net
 networks:
   traefik-net:
